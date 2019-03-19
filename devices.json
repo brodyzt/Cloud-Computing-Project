@@ -1,0 +1,52 @@
+[
+    {
+        "deviceId" : "cow_sensor_0001",
+        "cowId" : 1,
+        "key" : ""
+    },
+    {
+        "deviceId" : "cow_sensor_0002",
+        "cowId" : 2,
+        "key" : ""
+    },
+    {
+        "deviceId" : "cow_sensor_0003",
+        "cowId" : 3,
+        "key" : ""
+    },
+    {
+        "deviceId" : "cow_sensor_0004",
+        "cowId" : 4,
+        "key" : ""
+    },
+    {
+        "deviceId" : "cow_sensor_0005",
+        "cowId" : 5,
+        "key" : ""
+    },
+    {
+        "deviceId" : "cow_sensor_0006",
+        "cowId" : 6,
+        "key" : ""
+    },
+    {
+        "deviceId" : "cow_sensor_0007",
+        "cowId" : 7,
+        "key" : ""
+    },
+    {
+        "deviceId" : "cow_sensor_0008",
+        "cowId" : 8,
+        "key" : ""
+    },
+    {
+        "deviceId" : "cow_sensor_0009",
+        "cowId" : 9,
+        "key" : ""
+    },
+    {
+        "deviceId" : "cow_sensor_0010",
+        "cowId" : 10,
+        "key" : ""
+    }
+]
