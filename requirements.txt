@@ -1,0 +1,3 @@
+from https://docs.microsoft.com/en-us/python/azure/python-sdk-azure-install?view=azure-python
+
+pip install azure
