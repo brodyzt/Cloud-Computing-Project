@@ -40,13 +40,13 @@ class Sensor {
 
     start() {
         // Register first callback for 5 to 60 seconds
-        //TODO: this shouldn't be random
         setTimeout(this.timer, (Math.random() * 55000) + 5000, this);
     }
 
     timer(self) {
         if (self._ready === true) {
             // "Trigger" the camera with a random photo
+            //TODO: this should be an actual cow
             var index = Math.floor(Math.random() * self._files.length);
             self.trigger(self._files[index], (err, result) => {});
 
@@ -101,14 +101,15 @@ class Sensor {
 // Load image file names
 var fs = require('fs');
 
-fs.readdir('photos', (err, files) => {
-    // Create an array of cameras
-    var cameras = JSON.parse(fs.readFileSync('cameras.json', 'utf8')).map(
-        camera => new Camera(
-            camera.deviceId,
-            camera.latitude,
-            camera.longitude,
-            camera.key,
+//https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback
+//files is the name of all the files in the directory
+fs.readdir('fake_cow_data', (err, files) => {
+    // Create an array of sensors
+    var sensors = JSON.parse(fs.readFileSync('sensors.json', 'utf8')).map(
+        sensor => new Sensor(
+            sensor.deviceId,
+            sensor.cowId,
+            sensor.key,
             files
         )
     );
