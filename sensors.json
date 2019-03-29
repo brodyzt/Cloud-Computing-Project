@@ -1,50 +1,5 @@
 [
     {
-        "deviceId": "cow_sensor_0001",
-        "cowId": 10399,
-        "key": "QBxtwrk6cBp9w5GxfZP07YNZ9ovSDOjC16DHVwTsR5U="
-    },
-    {
-        "deviceId": "cow_sensor_0002",
-        "cowId": 11357,
-        "key": "iYxzKCGnI110vB4f/NqWI0o0rTwgNsszfhEs1TR1pmQ="
-    },
-    {
-        "deviceId": "cow_sensor_0003",
-        "cowId": 11814,
-        "key": "7Fo1mLYR1preIz2RRYIjtDFZIZ5fHM1t5/KD1j6+i7Q="
-    },
-    {
-        "deviceId": "cow_sensor_0004",
-        "cowId": 13224,
-        "key": "b290iasx5u26OT6QFz44ufuk0HY4JYPiYt96mFTQSio="
-    },
-    {
-        "deviceId": "cow_sensor_0005",
-        "cowId": 10773,
-        "key": "NaXV1coeEmBggZQswWLUsrpBF0Bic/MiWYOxU2as0aE="
-    },
-    {
-        "deviceId": "cow_sensor_0006",
-        "cowId": 13091,
-        "key": "XCN3BE+V8mZDUlXN6l0OYoAYTEpj9AgO4ANVHKT75CE="
-    },
-    {
-        "deviceId": "cow_sensor_0007",
-        "cowId": 12065,
-        "key": "lIwgnXs1umAgtBP9L3sXGI7NL8sjZbaVcXCPDkCDSWI="
-    },
-    {
-        "deviceId": "cow_sensor_0008",
-        "cowId": 13140,
-        "key": "LXE8GefJ4jXiDUXoadadQxDDadqDnQmPF86jsJnci1k="
-    },
-    {
-        "deviceId": "cow_sensor_0009",
-        "cowId": 8961,
-        "key": "JBWbneKBnPYVNcGurkx/8BVUQ9qXcONwr/rNEdGrYF4="
-    },
-    {
         "deviceId": "cow_sensor_0010",
         "cowId": 10542,
         "key": "HgXK6ZlN27M8IgRRfHKTFC0zfTM04v9sCS3kPzDECI0="

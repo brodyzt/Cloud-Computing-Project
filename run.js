@@ -47,12 +47,21 @@ class Sensor {
 
     // add a function to read from csv and return the right row
     getRow(csv_file) {
-        console.log(csv_file);
-        Papa.parse(csv_file, {
-            header: true,
-            complete: function(results) {
-                console.log(results);
+        fs.createReadStream(csv_file)
+        .pipe(csv())
+        .on('data', function (data) {
+            try {
+                // console.log("Name is: " + data.NAME);
+                // console.log("Age is: " + data.AGE);
+                console.log(data);
+                //perform the operation
+            } catch (err) {
+                //error handler
             }
+        })
+        .on('end', function () {
+            //some final operation
+            console.log("ended");
         });
     }
 
@@ -67,7 +76,7 @@ class Sensor {
             // self.trigger(self._files[index], (err, result) => {});
 
             // // Register another callback for 5 to 20 seconds
-            // setTimeout(self.timer, (Math.random() * 15000) + 5000, self);
+            setTimeout(self.timer, (Math.random() * 15000) + 5000, self);
         }
     }
     //replace imageFileName with csvRow
@@ -77,8 +86,7 @@ class Sensor {
             this.upload(imageFileName, (err, result) => {
                 if (err) {
                     callback(err, result);
-                }
-                else {
+                } else {
                     // Send an event to the IoT hub
                     this.send(imageFileName, (err, result) => {
                         console.log(this._id + ': https://' + this._storageAccountName + '.blob.core.windows.net/photos/' + imageFileName);
@@ -94,23 +102,23 @@ class Sensor {
             callback(err, result);
         });
     }
-        
+
     send(imageFileName, callback) {
         var Message = require('azure-iot-device').Message;
 
         var data = {
-            'deviceId' : this._id,
-            'latitude' : this._latitude,
-            'longitude' : this._longitude,
-            'url' : 'https://' + this._storageAccountName + '.blob.core.windows.net/photos/' + imageFileName,
-            'timestamp' : new Date().toISOString()
+            'deviceId': this._id,
+            'latitude': this._latitude,
+            'longitude': this._longitude,
+            'url': 'https://' + this._storageAccountName + '.blob.core.windows.net/photos/' + imageFileName,
+            'timestamp': new Date().toISOString()
         };
 
         var message = new Message(JSON.stringify(data));
 
         this._client.sendEvent(message, (err, result) => {
             callback(err, result);
-        });        
+        });
     }
 }
 
@@ -119,7 +127,9 @@ var fs = require('fs');
 // Load jQuery csv library
 // var jQuery = require('jquery');
 // require('./jquery-csv/src/jquery.csv.js');
-var Papa = require('papaparse'); 
+var Papa = require('papaparse');
+var csv = require('csv-parser');
+var async = require('async');
 //var obj = csv(); 
 
 //https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback
@@ -143,8 +153,7 @@ fs.readdir('fake_cow_data', (err, files) => {
             if (status === true) {
                 console.log(sensor.id + ' connected');
                 sensor.start();
-            }
-            else {
+            } else {
                 console.log(sensor.id + ' failed to connect');
             }
         })
