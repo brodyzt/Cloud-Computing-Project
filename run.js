@@ -6,12 +6,14 @@ var storageAccountKey = 'oZvIVIcXwxhXM/k8pFMhfkLopRAikmMRoFe5sVjcjm8abQCt/2bNyDl
 
 class Sensor {
     //TODO: put in real data here
-    constructor(id, cowId, key, files) {
+    constructor(id, cowId, key, csv) {
         this._id = id;
         this._cowId = cowId;
         this._key = key;
-        this._files = files.slice(0);
+        this._csv = csv;
         this._ready = false;
+        //current row in the csv file to send
+        this._index = 0;
     }
 
     get id() {
@@ -39,22 +41,36 @@ class Sensor {
     }
 
     start() {
-        // Register first callback for 5 to 60 seconds
-        setTimeout(this.timer, (Math.random() * 55000) + 5000, this);
+        // Register first callback for 5 to 20 seconds
+        setTimeout(this.timer, (Math.random() * 15000) + 5000, this);
+    }
+
+    // add a function to read from csv and return the right row
+    getRow(csv_file) {
+        console.log(csv_file);
+        Papa.parse(csv_file, {
+            header: true,
+            complete: function(results) {
+                console.log(results);
+            }
+        });
     }
 
     timer(self) {
         if (self._ready === true) {
-            // "Trigger" the camera with a random photo
+            // "Trigger" the sensor with the next row to send
             //TODO: this should be an actual cow
-            var index = Math.floor(Math.random() * self._files.length);
-            self.trigger(self._files[index], (err, result) => {});
 
-            // Register another callback for 5 to 60 seconds
-            setTimeout(self.timer, (Math.random() * 55000) + 5000, self);
+            self.getRow(self._csv);
+
+            // var index = Math.floor(Math.random() * self._files.length);
+            // self.trigger(self._files[index], (err, result) => {});
+
+            // // Register another callback for 5 to 20 seconds
+            // setTimeout(self.timer, (Math.random() * 15000) + 5000, self);
         }
     }
-
+    //replace imageFileName with csvRow
     trigger(imageFileName, callback) {
         if (this._ready === true) {
             // Upload the image to blob storage
@@ -100,6 +116,11 @@ class Sensor {
 
 // Load image file names
 var fs = require('fs');
+// Load jQuery csv library
+// var jQuery = require('jquery');
+// require('./jquery-csv/src/jquery.csv.js');
+var Papa = require('papaparse'); 
+//var obj = csv(); 
 
 //https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback
 //files is the name of all the files in the directory
@@ -110,19 +131,21 @@ fs.readdir('fake_cow_data', (err, files) => {
             sensor.deviceId,
             sensor.cowId,
             sensor.key,
-            files
+            'fake_cow_data/' + (files.filter((file) => file === (sensor.cowId + '.csv'))[0])
+            //$.csv.toObjects(files.filter((file) => file === (sensor.cowId + '.csv'))[0])
         )
     );
 
     // Start the cameras
-    cameras.forEach(camera => {
-        camera.connect(iotHubName, storageAccountName, storageAccountKey, status => {
+    sensors.forEach(sensor => {
+        console.log(sensor);
+        sensor.connect(iotHubName, storageAccountName, storageAccountKey, status => {
             if (status === true) {
-                console.log(camera.id + ' connected');
-                camera.start();
+                console.log(sensor.id + ' connected');
+                sensor.start();
             }
             else {
-                console.log(camera.id + ' failed to connect');
+                console.log(sensor.id + ' failed to connect');
             }
         })
     });
