@@ -14,6 +14,8 @@ class Sensor {
         this._ready = false;
         //current row in the csv file to send
         this._index = 0;
+        //will store all rows of the csv
+        this._rows = []; 
     }
 
     get id() {
@@ -42,41 +44,43 @@ class Sensor {
 
     start() {
         // Register first callback for 5 to 20 seconds
-        setTimeout(this.timer, (Math.random() * 15000) + 5000, this);
+        setTimeout(this.timer, (Math.random() * 5000) + 1000, this);
     }
 
     // add a function to read from csv and return the right row
-    getRow(csv_file) {
-        fs.createReadStream(csv_file)
+    loadRows() {
+        //keep the counter of how many rows have been read
+        var i = 0;
+        const results = [];
+        fs.createReadStream(this._csv)
         .pipe(csv())
-        .on('data', function (data) {
-            try {
-                // console.log("Name is: " + data.NAME);
-                // console.log("Age is: " + data.AGE);
-                console.log(data);
-                //perform the operation
-            } catch (err) {
-                //error handler
-            }
-        })
-        .on('end', function () {
-            //some final operation
-            console.log("ended");
+        .on('data', (data) => results.push(data))
+        .on('end', () => {
+            this._rows = results;
         });
+    }
+
+    getRow() {
+        var row_to_return = this._rows[this._index];
+        this._index = this._index + 1;
+        return row_to_return;
     }
 
     timer(self) {
         if (self._ready === true) {
             // "Trigger" the sensor with the next row to send
             //TODO: this should be an actual cow
-
-            self.getRow(self._csv);
+            console.log(self._index);
+            var x = self.getRow(self._csv);
+            console.log(x);
+            //self.getRow(self._csv);
+            
 
             // var index = Math.floor(Math.random() * self._files.length);
             // self.trigger(self._files[index], (err, result) => {});
 
             // // Register another callback for 5 to 20 seconds
-            setTimeout(self.timer, (Math.random() * 15000) + 5000, self);
+            setTimeout(self.timer, (Math.random() * 5000) + 1000, self);
         }
     }
     //replace imageFileName with csvRow
@@ -125,12 +129,8 @@ class Sensor {
 // Load image file names
 var fs = require('fs');
 // Load jQuery csv library
-// var jQuery = require('jquery');
-// require('./jquery-csv/src/jquery.csv.js');
-var Papa = require('papaparse');
 var csv = require('csv-parser');
 var async = require('async');
-//var obj = csv(); 
 
 //https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback
 //files is the name of all the files in the directory
@@ -142,13 +142,13 @@ fs.readdir('fake_cow_data', (err, files) => {
             sensor.cowId,
             sensor.key,
             'fake_cow_data/' + (files.filter((file) => file === (sensor.cowId + '.csv'))[0])
-            //$.csv.toObjects(files.filter((file) => file === (sensor.cowId + '.csv'))[0])
         )
     );
 
     // Start the cameras
     sensors.forEach(sensor => {
         console.log(sensor);
+        sensor.loadRows();
         sensor.connect(iotHubName, storageAccountName, storageAccountKey, status => {
             if (status === true) {
                 console.log(sensor.id + ' connected');
