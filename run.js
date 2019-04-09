@@ -70,51 +70,57 @@ class Sensor {
         if (self._ready === true) {
             // "Trigger" the sensor with the next row to send
             //TODO: this should be an actual cow
-            console.log(self._index);
-            var x = self.getRow(self._csv);
-            console.log(x);
-            //self.getRow(self._csv);
-            
+            // console.log(self._index);
+            var row = self.getRow(self._csv);
 
-            // var index = Math.floor(Math.random() * self._files.length);
-            // self.trigger(self._files[index], (err, result) => {});
+            self.trigger(row, (err, result) => {});
 
             // // Register another callback for 5 to 20 seconds
             setTimeout(self.timer, (Math.random() * 5000) + 1000, self);
         }
     }
     //replace imageFileName with csvRow
-    trigger(imageFileName, callback) {
+    trigger(row, callback) {
         if (this._ready === true) {
-            // Upload the image to blob storage
-            this.upload(imageFileName, (err, result) => {
-                if (err) {
-                    callback(err, result);
-                } else {
-                    // Send an event to the IoT hub
-                    this.send(imageFileName, (err, result) => {
-                        console.log(this._id + ': https://' + this._storageAccountName + '.blob.core.windows.net/photos/' + imageFileName);
-                        callback(err, result);
-                    });
-                }
+            // Send an event to the IoT hub
+            this.send(row, (err, result) => {
+                console.log(this._id + ': https://' + this._storageAccountName + '.blob.core.windows.net/cow_data/' + row);
+                callback(err, result);
             });
         }
     }
+    
+    // //replace imageFileName with csvRow
+    // trigger(row, callback) {
+    //     if (this._ready === true) {
+    //         // Upload the image to blob storage
+    //         this.upload(row, (err, result) => {
+    //             if (err) {
+    //                 callback(err, result);
+    //             } else {
+    //                 // Send an event to the IoT hub
+    //                 this.send(imageFileName, (err, result) => {
+    //                     console.log(this._id + ': https://' + this._storageAccountName + '.blob.core.windows.net/cow_data/' + imageFileName);
+    //                     callback(err, result);
+    //                 });
+    //             }
+    //         });
+    //     }
+    // }
+    //I don't think I need this? since no file being uploaded
+    // upload(row, callback) {
+    //     this._blobService.createBlockBlobFromLocalFile('photos', imageFileName, 'photos/' + imageFileName, (err, result) => {
+    //         callback(err, result);
+    //     });
+    // }
 
-    upload(imageFileName, callback) {
-        this._blobService.createBlockBlobFromLocalFile('photos', imageFileName, 'photos/' + imageFileName, (err, result) => {
-            callback(err, result);
-        });
-    }
-
-    send(imageFileName, callback) {
+    send(row, callback) {
         var Message = require('azure-iot-device').Message;
 
         var data = {
-            'deviceId': this._id,
-            'latitude': this._latitude,
-            'longitude': this._longitude,
-            'url': 'https://' + this._storageAccountName + '.blob.core.windows.net/photos/' + imageFileName,
+            'sensorId': this._id,
+            'cowId': this._cowId,
+            'data': row,
             'timestamp': new Date().toISOString()
         };
 
