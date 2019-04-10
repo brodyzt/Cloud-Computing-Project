@@ -23,11 +23,6 @@ class Sensor {
     }
 
     connect(iotHubName, storageAccountName, storageAccountKey, callback) {
-        // Connect to blob storage
-        var azure = require('azure-storage');
-        this._storageAccountName = storageAccountName;
-        this._blobService = azure.createBlobService(storageAccountName, storageAccountKey);
-
         // Connect to the IoT hub
         var connectionString = 'HostName=' + iotHubName + '.azure-devices.net;DeviceId=' + this._id + ';SharedAccessKey=' + this._key;
         var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
@@ -84,35 +79,11 @@ class Sensor {
         if (this._ready === true) {
             // Send an event to the IoT hub
             this.send(row, (err, result) => {
-                console.log(this._id + ': https://' + this._storageAccountName + '.blob.core.windows.net/cow_data/' + row);
+                console.log(this._id + ' sent row # ' + this._index);
                 callback(err, result);
             });
         }
     }
-    
-    // //replace imageFileName with csvRow
-    // trigger(row, callback) {
-    //     if (this._ready === true) {
-    //         // Upload the image to blob storage
-    //         this.upload(row, (err, result) => {
-    //             if (err) {
-    //                 callback(err, result);
-    //             } else {
-    //                 // Send an event to the IoT hub
-    //                 this.send(imageFileName, (err, result) => {
-    //                     console.log(this._id + ': https://' + this._storageAccountName + '.blob.core.windows.net/cow_data/' + imageFileName);
-    //                     callback(err, result);
-    //                 });
-    //             }
-    //         });
-    //     }
-    // }
-    //I don't think I need this? since no file being uploaded
-    // upload(row, callback) {
-    //     this._blobService.createBlockBlobFromLocalFile('photos', imageFileName, 'photos/' + imageFileName, (err, result) => {
-    //         callback(err, result);
-    //     });
-    // }
 
     send(row, callback) {
         var Message = require('azure-iot-device').Message;
