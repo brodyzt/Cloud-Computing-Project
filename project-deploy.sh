@@ -1,22 +1,31 @@
+# Print code as executed
+set -v
+
 ############################# Building Edge Server #######################################
 
-# Create resource group to contain edge server resources
+echo "Creating resource group to contain edge server resources"
 az group create --name edge-server-group --location centralus
 
-# Create storage account for edge server
+echo "Creating storage account for edge server"
 az storage account create --name edgeserverstorage --location centralus --resource-group edge-server-group --sku Standard_LRS
 
-# Create streaming hub function app
-az functionapp create --resource-group edge-server-group --consumption-plan-location centralus \
---name sensor-data-received-function --storage-account  edgeserverstorage --runtime node
+echo "Creating IoT Hub"
+az iot hub create --name cowzureIoTHub --resource-group edge-server-group --location centralus --sku B1
 
-# Deploy streaming hub function hub
-pushd "sensor-data-received-function"
-func azure functionapp publish sensor-data-received-function
+echo "Creating function app for stream analytics"
+az functionapp create --resource-group edge-server-group --consumption-plan-location centralus \
+--name sensorDataReceivedFunction --storage-account  edgeserverstorage --runtime node
+
+echo "Deploing streaming hub function hub"
+pushd "function-servers/"
+func azure functionapp publish sensorDataReceivedFunction
 popd
+
+echo "Deploying database storage for edge server"
+az cosmosdb create --name edgeserverdatabase --resource-group edge-server-group
 
 ############################# Building Backend Server #######################################
 
-# Create resource group to contain main server resources
+echo "Creating resource group to contain main server resources"
 az group create --name backend-server-group --location westus
 
