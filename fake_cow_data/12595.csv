@@ -1,0 +1,8 @@
+ID,LACT,Time_Born,AdjTime,N_CALVES,CSEX,NUM_DEAD,AGEFDAT,CINT,GEST,PDIM,DDRY,PDOPN,PREFR,PTOTF,PTOTM,PTOTS,EASE,Time,Raw_Activity_Data,Activity_Change,Activity_Change_by_2_Hours,Rumination_Raw_Data,Weighted_Rumination_Change,Rumination_Deviation_by_2_Hours,Total_Rumination_Minutes_In_Last,Daily_Rumination,Weekly_Rumination_Average,Group,new_health_index,Daily_activity,parity,Day,Period,CalvingYN,newvar,period_to_calving
+12595,1,12:15,12:00,1,F,0,690,,276,,,,31,,,,1,12:00,29,0,-5.54,9,-19,-6.74,321,207,420,,,393,1,0,0,1,0,0
+12595,1,12:15,12:00,1,F,0,690,,276,,,,31,,,,1,10:00,34,4,1.45,8,-21,-12.41,328,207,420,,,393,1,0,1,0,1,-1
+12595,1,12:15,12:00,1,F,0,690,,276,,,,31,,,,1,8:00,33,2,1.31,8,-7,-6.86,372,207,420,,,393,1,0,2,0,2,-2
+12595,1,12:15,12:00,1,F,0,690,,276,,,,31,,,,1,6:00,33,1,4.15,14,-1,-14.94,402,207,420,,,393,1,0,3,0,3,-3
+12595,1,12:15,12:00,1,F,0,690,,276,,,,31,,,,1,4:00,31,-5,3.05,30,6,-3.31,433,207,420,,,393,1,0,4,0,4,-4
+12595,1,12:15,12:00,1,F,0,690,,276,,,,31,,,,1,2:00,33,-7,3.18,35,1,-1.26,443,207,420,,,393,1,0,5,0,5,-5
+12595,1,12:15,12:00,1,F,0,690,,276,,,,31,,,,1,0:00,37,-6,1.68,42,-2,-1.13,438,207,420,,,393,1,0,6,0,6,-6

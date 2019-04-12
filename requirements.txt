@@ -1,3 +1,4 @@
-from https://docs.microsoft.com/en-us/python/azure/python-sdk-azure-install?view=azure-python
-
-pip install azure
+numpy==1.14.0
+pandas==0.22.0
+scikit-learn==0.18
+scipy==0.16.0
