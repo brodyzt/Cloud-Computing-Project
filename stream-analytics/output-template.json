@@ -1,0 +1,18 @@
+{
+    "type": "Microsoft.StreamAnalytics/streamingjobs/outputs",
+    "apiVersion": "2016-03-01",
+    "name": "edgestreamanalyticsjob/CowzureOuput",
+    "dependsOn": [
+        "[resourceId('Microsoft.StreamAnalytics/streamingjobs', 'edgestreamanalyticsjob')]"
+    ],
+    "properties": {
+        "datasource": {
+            "type": "Microsoft.AzureFunction",
+            "properties": {
+                "functionAppName": "cowzureEdgeFunctionServer",
+                "functionName": "sensorDataReceivedFunction",
+                "apiKey": null
+            }
+        }
+    }
+}
