@@ -4,14 +4,16 @@ import pickle
 import urllib.parse
 import re
 import bz2
-
+import os
 # note: use HTTP not HTTPS
 class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
     CLOUD_URL = 'http://localhost:8000' # TODO Change
     model = None
     while model is None: 
+        print('here')
         try:
             r = requests.get(CLOUD_URL+'/model')
+            print('ok')
             model_serialized = r.content
             model = pickle.loads(model_serialized)
         except:
@@ -57,7 +59,7 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
 
 def run(server_class=http.server.HTTPServer,
     handler_class=SimpleRequestHandler):
-    server_address = ('', 8080)
+    server_address = ('0.0.0.0', 8080)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
 
