@@ -79,7 +79,7 @@ class Sensor {
         if (this._ready === true) {
             // Send an event to the IoT hub
             this.send(row, (err, result) => {
-                console.log(this._id + ' sent row # ' + this._index);
+                console.log(this._id + ' sent row #' + this._index);
                 callback(err, result);
             });
         }
@@ -96,7 +96,7 @@ class Sensor {
         };
 
         var message = new Message(JSON.stringify(data));
-
+        console.log(message);
         this._client.sendEvent(message, (err, result) => {
             callback(err, result);
         });
