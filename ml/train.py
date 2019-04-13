@@ -5,12 +5,15 @@ from numpy import genfromtxt
 import pickle
 import bz2
 import os
+import urllib.parse
+import http.client
 # todo pull based on time
 # todo figure out format
 import http.server
+import requests
 
 class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
-
+    
     retrain = False
     print('set retrain false')
     model = None
@@ -23,8 +26,37 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
         print('set retrain true')
 
     def do_GET(self):
+        if self.path == '/model':
+            if os.path.exists('model.pkl.bz'):
+                file = bz2.BZ2File('model.pkl.bz','rb')
+                model = pickle.load(file)
+                model_serialized = pickle.dumps(model)
+                file.close()
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(model_serialized)
+        elif self.path == '/test': # mimics what the message queue would do to the predictive service
+            model_serialized = pickle.dumps(SimpleRequestHandler.model)
+            print(model_serialized)
+            # print(model_serialized)
+            # print(model_serialized.decode('utf-8', 'backslashreplace'))
+            # requests.post(CLOUD_URL + '/model', data={'model_serialized':model_serialized.decode('utf-8', 'backslashreplace')})
+            params = {'model_serialized': urllib.parse.quote(model_serialized)}
+            
+            print(params)
+            headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+            conn = http.client.HTTPConnection("localhost", 8080) # TODO change
+            conn.request("POST", "/model", urllib.parse.urlencode(params), headers)
+
+    def do_POST(self):
         print (self.path)
-        if self.path == '/data':
+        # time to broadcast the model
+        if self.path == '/trigger':
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(pickle.dumps(SimpleRequestHandler.model))
+        # receiving new data
+        elif self.path == '/data':
             ######### FETCH INPUTS ###############
             # hardcoded vals
             # TODO fix this
@@ -52,17 +84,14 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             else:
                 print('here')
                 n = SimpleRequestHandler.model.partial_fit(x,y)
-            ####### SAVE&SEND MODEL ###########
+            ####### SAVEMODEL ###########
 
             file = bz2.BZ2File('model.pkl.bz','wb')
             SimpleRequestHandler.model = n
             pickle.dump(n, file)
             file.close()
             
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(pickle.dumps(n))
-
+            
 def run(server_class=http.server.HTTPServer,
     handler_class=SimpleRequestHandler):
     server_address = ('', 8000)
