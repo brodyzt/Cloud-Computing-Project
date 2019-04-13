@@ -94,7 +94,7 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             
 def run(server_class=http.server.HTTPServer,
     handler_class=SimpleRequestHandler):
-    server_address = ('', 8000)
+    server_address = ('0.0.0.0', 8000)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
 
