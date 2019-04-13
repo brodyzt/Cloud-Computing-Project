@@ -33,10 +33,9 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             input = [[float(x) for x in matches]]
             print(input)
             output = SimpleRequestHandler.model.predict(input)
-            print(output)
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(output)
+            self.wfile.write(str(output[0]).encode('utf-8'))
 
     def do_POST(self):
         print('posted')
