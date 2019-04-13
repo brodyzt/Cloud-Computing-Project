@@ -1,0 +1,30 @@
+{
+    "type": "Microsoft.StreamAnalytics/streamingjobs/inputs",
+    "apiVersion": "2016-03-01",
+    "name": "edgestreamanalyticsjob/CowzureInput",
+    "dependsOn": [
+        "[resourceId('Microsoft.StreamAnalytics/streamingjobs', 'edgestreamanalyticsjob')]"
+    ],
+    "properties": {
+        "type": "Stream",
+        "datasource": {
+            "type": "Microsoft.Devices/IotHubs",
+            "properties": {
+                "iotHubNamespace": "cowzureIoTHub",
+                "sharedAccessPolicyName": "iothubowner",
+                "sharedAccessPolicyKey": "C2nECXEWCyNmGjkzLT36KzklKBBGtLyEG0LORiAMhuc=",
+                "endpoint": "messages/events",
+                "consumerGroupName": "$Default"
+            }
+        },
+        "compression": {
+            "type": "None"
+        },
+        "serialization": {
+            "type": "Json",
+            "properties": {
+                "encoding": "UTF8"
+            }
+        }
+    }
+}
