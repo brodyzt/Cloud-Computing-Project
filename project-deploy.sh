@@ -1,5 +1,6 @@
 # Print code as executed
 set -v
+set -o noclobber
 export PATH=~/.npm-global/bin:$PATH
 
 ############################# Building Edge Server #######################################
@@ -55,12 +56,55 @@ pwsh -c New-AzStreamAnalyticsJob \
   -Name edgestreamanalyticsjob \
   -Force
 
+echo "Extracting access key for IoT Hub"
+PRIMARY_KEY=`az iot hub policy show --hub-name cowzureIoTHub --name iothubowner | underscore extract primaryKey --outfmt text`
+INPUT_TEMPLATE='{ \
+    "type": "Microsoft.StreamAnalytics/streamingjobs/inputs", \
+    "apiVersion": "2016-03-01", \
+    "name": "sensorinput", \
+    "dependsOn": [ \
+        "[resourceId('Microsoft.StreamAnalytics/streamingjobs', 'edgestreamanalyticsjob')]" \
+    ], \
+    "properties": { \
+        "type": "Stream", \
+        "datasource": { \
+            "type": "Microsoft.Devices/IotHubs", \
+            "properties": { \
+                "iotHubNamespace": "cowzureIoTHub", \
+                "sharedAccessPolicyName": "iothubowner", \
+                "sharedAccessPolicyKey": "'$PRIMARY_KEY'", \
+                "endpoint": "messages/events", \
+                "consumerGroupName": "$Default" \
+            } \
+        }, \
+        "compression": { \
+            "type": "None" \
+        }, \
+        "serialization": { \
+            "type": "Json", \
+            "properties": { \
+                "encoding": "UTF8" \
+            } \
+        } \
+    } \
+}'
+
+echo "Writing Input Template to file"
+echo $INPUT_TEMPLATE > stream-analytics/input-template.json
+
 echo "Creating Stream Analytics Input"
 pwsh -C New-AzStreamAnalyticsInput \
     -ResourceGroupName "edge-server-group" \
     -JobName "edgestreamanalyticsjob" \
     -File "stream-analytics\input-template.json" \
     -Name "sensorinput"
+
+echo "Creating Stream Analytics Output"
+pwsh -C New-AzStreamAnalyticsOutput \
+    -ResourceGroupName "edge-server-group" \
+    -JobName "edgestreamanalyticsjob" \
+    -File "stream-analytics\input-template.json" \
+    -Name "functionserveroutput"
 
 
 ############################# Building Backend Server #######################################
