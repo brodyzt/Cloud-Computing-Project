@@ -55,43 +55,67 @@ class Sensor {
         });
     }
 
+    //retrieves the next row to send and increments counter
     getRow() {
         var row_to_return = this._rows[this._index];
         this._index = this._index + 1;
         return row_to_return;
     }
 
+    //checks the type of the row--either "update" or "birth"
+    getEventType() {
+        if (this._rows[this._index - 1].ID == 'BIRTH') {
+            return "birth";
+        }
+        else {
+            return "update";
+        }
+    }
+
     timer(self) {
         if (self._ready === true) {
             // "Trigger" the sensor with the next row to send
-            //TODO: this should be an actual cow
-            // console.log(self._index);
             var row = self.getRow(self._csv);
+            var event_type = self.getEventType();
 
-            self.trigger(row, (err, result) => {});
+            var should_continue = self.trigger(row, event_type, (err, result) => {});
 
             // // Register another callback for 5 to 20 seconds
-            setTimeout(self.timer, (Math.random() * 5000) + 1000, self);
+            if (should_continue) {
+                setTimeout(self.timer, (Math.random() * 5000) + 1000, self);
+            }
+            else {
+                console.log('out of data to send');
+            }
         }
     }
     //replace imageFileName with csvRow
-    trigger(row, callback) {
+    trigger(row, event_type, callback) {
         if (this._ready === true) {
             // Send an event to the IoT hub
-            this.send(row, (err, result) => {
+            this.send(row, event_type, (err, result) => {
                 console.log(this._id + ' sent row #' + this._index);
                 callback(err, result);
             });
+
+            //TODO: have it stop when the file is out
+            if (this._index == this._rows.length) {
+                return false;
+            }
+            else {
+                return true;
+            }
         }
     }
 
-    send(row, callback) {
+    send(row, event_type, callback) {
         var Message = require('azure-iot-device').Message;
 
         var data = {
             'sensorId': this._id,
             'cowId': this._cowId,
             'data': row,
+            'eventType': event_type,
             'timestamp': new Date().toISOString()
         };
 
@@ -113,18 +137,18 @@ var async = require('async');
 //files is the name of all the files in the directory
 fs.readdir('fake_cow_data', (err, files) => {
     // Create an array of sensors
+    //TODO: change to birth type/back
     var sensors = JSON.parse(fs.readFileSync('sensors.json', 'utf8')).map(
         sensor => new Sensor(
             sensor.deviceId,
             sensor.cowId,
             sensor.key,
-            'fake_cow_data/' + (files.filter((file) => file === (sensor.cowId + '.csv'))[0])
+            'fake_cow_data_with_birth/' + (files.filter((file) => file === (sensor.cowId + '.csv'))[0])
         )
     );
 
     // Start the cameras
     sensors.forEach(sensor => {
-        console.log(sensor);
         sensor.loadRows();
         sensor.connect(iotHubName, storageAccountName, storageAccountKey, status => {
             if (status === true) {
