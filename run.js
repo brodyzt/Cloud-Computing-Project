@@ -1,8 +1,8 @@
 'use strict';
 
-var iotHubName = 'cowzure-hub';
-var storageAccountName = 'cowzure';
-var storageAccountKey = 'oZvIVIcXwxhXM/k8pFMhfkLopRAikmMRoFe5sVjcjm8abQCt/2bNyDlT+RZZDzyHI9hB7yQlFKBm+P0oJvkPQg==';
+var iotHubName = 'cowzureIoTHub';
+var storageAccountName = 'edgeserverstorage';
+var storageAccountKey = '6m5OUSalxah1FYMZaXa2c1acVn/afWdPHLx0dblhxgbY/QnCbw36mbxZfApFYuhTRoEerqMkvgrBlRflWyS2/g==';
 
 class Sensor {
     //TODO: put in real data here

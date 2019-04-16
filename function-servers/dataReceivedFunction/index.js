@@ -9,6 +9,7 @@ module.exports = async function (context, req) {
 
         //write to Cosmos DB
         //change the name [cowData] to whatever the document parameter name is
+        // TODO: ADD ID FIELD TO JSON
         // context.bindings.cowData = req.body[0].data;
         
         //extract parameters for the ML model 
