@@ -26,6 +26,10 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
         print('set retrain true')
 
     def do_GET(self):
+        if self.path == '/':
+            self.send_response(200)
+            self.end_headers()
+            # self.wfile.write(model_serialized)
         if self.path == '/model':
             if os.path.exists('model.pkl.bz'):
                 file = bz2.BZ2File('model.pkl.bz','rb')

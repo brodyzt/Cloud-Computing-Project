@@ -1,0 +1,16 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: trainapp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: trainapp
+    spec:
+      containers:
+      - name: trainapp
+        image: cowzurecontainerreg.azurecr.io/train_img:v1
+        ports:
+        - containerPort: 8000 # should match docker file

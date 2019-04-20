@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: train-service
+spec:
+  selector:
+    app: trainapp
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      name: my-train-port
+      port: 80 # this is external what you expose
+      targetPort: 8000 # this is redirected , should match deployment port
