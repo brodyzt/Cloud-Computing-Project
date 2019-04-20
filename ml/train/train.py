@@ -49,7 +49,7 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             
             print(params)
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-            conn = http.client.HTTPConnection("localhost", 8080) # TODO change
+            conn = http.client.HTTPConnection("http://predictapp", 8080) # TODO change
             conn.request("POST", "/model", urllib.parse.urlencode(params), headers)
 
     def do_POST(self):

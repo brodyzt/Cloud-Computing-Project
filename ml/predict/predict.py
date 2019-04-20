@@ -7,24 +7,29 @@ import bz2
 import os
 # note: use HTTP not HTTPS
 class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
-    CLOUD_URL = 'http://localhost:8000' # TODO Change
-    model = None
-    while model is None: 
-        print('here')
-        try:
-            r = requests.get(CLOUD_URL+'/model')
-            print('ok')
-            model_serialized = r.content
-            model = pickle.loads(model_serialized)
-        except:
-            pass
-    # TODO use local model until network connectivity re-established?
+    CLOUD_URL = 'http://trainapp/' # TODO Change
+    file = bz2.BZ2File('model.pkl.bz','rb')
+    model = pickle.load(file)
+    # TODO get model
+
+    try:
+        r = requests.get(CLOUD_URL+'/model')
+        print('ok')
+        model_serialized = r.content
+        model = pickle.loads(model_serialized)
+    except:
+        pass
 
     def do_GET(self):
         # expects the following format for inputs query param
         # >>> sample_arr = [1, 2]
         # >>> urllib.urlencode([('inputs[]', i) for i in sample_arr])
         # 'inputs%5B%5D=1&inputs%5B%5D=2'
+        print(self.path)
+        if self.path =='/':
+            self.send_response(200)
+            self.end_headers()
+            return 
         ind = self.path.index('predict?')
         if ind>0:
             

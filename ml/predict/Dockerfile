@@ -1,10 +1,9 @@
 FROM python:3
 
-RUN pip3 install numpy
 RUN pip3 install scipy
-RUN pip3 install requests scikit-learn
-
+RUN pip3 install pandas requests scikit-learn
+RUN pip3 install numpy
 COPY    predict.py predict.py
-
+COPY    model.pkl.bz model.pkl.bz
 EXPOSE 8080
 ENTRYPOINT ["python", "predict.py"]
