@@ -27,21 +27,21 @@ pushd "function-servers/"
 func azure functionapp publish cowzureEdgeFunctionServer
 popd
 
-# echo "Creating database account"
-# az cosmosdb create --name edgeserverdatabaseaccount \
-#     --resource-group edge-server-group
+echo "Creating database account"
+az cosmosdb create --name edgeserverdatabaseaccount \
+    --resource-group edge-server-group
 
-# echo "Deploying database storage for edge server"
-# az cosmosdb database create \
-#     --db-name edgeserverdatabase \
-#     --name edgeserverdatabaseaccount \
-#     --resource-group edge-server-group
+echo "Deploying database storage for edge server"
+az cosmosdb database create \
+    --db-name edgeserverdatabase \
+    --name edgeserverdatabaseaccount \
+    --resource-group edge-server-group
 
-# echo "Creating collection for regular data received event"
-# az cosmosdb collection create --collection-name regularsensordatacollection \
-#     --db-name edgeserverdatabase \
-#     --resource-group-name edge-server-group \
-#     --name edgeserverdatabaseaccount
+echo "Creating collection for regular data received event"
+az cosmosdb collection create --collection-name regularsensordatacollection \
+    --db-name edgeserverdatabase \
+    --resource-group-name edge-server-group \
+    --name edgeserverdatabaseaccount
 
 echo "Creating IoT Hub"
 az iot hub create --name cowzureIoTHub \
