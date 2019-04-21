@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: predict-service
+spec:
+  selector:
+    app: predictapp
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      name: my-predict-port
+      port: 80 # this is external what you expose
+      targetPort: 8080 # this is redirected , should match deployment port

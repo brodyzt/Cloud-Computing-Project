@@ -26,6 +26,10 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
         print('set retrain true')
 
     def do_GET(self):
+        if self.path == '/':
+            self.send_response(200)
+            self.end_headers()
+            # self.wfile.write(model_serialized)
         if self.path == '/model':
             if os.path.exists('model.pkl.bz'):
                 file = bz2.BZ2File('model.pkl.bz','rb')
@@ -45,7 +49,7 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             
             print(params)
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-            conn = http.client.HTTPConnection("localhost", 8080) # TODO change
+            conn = http.client.HTTPConnection("http://predictapp", 8080) # TODO change
             conn.request("POST", "/model", urllib.parse.urlencode(params), headers)
 
     def do_POST(self):
@@ -60,8 +64,14 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             ######### FETCH INPUTS ###############
             # hardcoded vals
             # TODO fix this
+            # y = # hours to calving
             z_p = pandas.read_csv('11457_new.csv')
             a_p = pandas.read_csv('11065_new.csv')
+            y = np.ndarray.flatten(np.concatenate((z_p[['period_to_calving']].values,a_p[['period_to_calving']].values)))
+            z_p = z_p.drop(columns=['period_to_calving'])
+            a_p = a_p.drop(columns=['period_to_calving'])
+            print(z_p)
+            print(a_p)
             z_c = z_p.values
             a_c = a_p.values
 
@@ -71,8 +81,7 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             # x = [] of [] : rumination-raw-data, weekly_ruminatino_average, raw_activity,daily_activity
             x = np.concatenate((z_c,a_c))
 
-            # y = # hours to calving
-            y = np.ndarray.flatten(np.concatenate((z_p[['period_to_calving']].values,a_p[['period_to_calving']].values)))
+            
 
             ########## TRAINING/RETRAIN ###################
             if not SimpleRequestHandler.retrain:
