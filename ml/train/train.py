@@ -7,8 +7,7 @@ import bz2
 import os
 import urllib.parse
 import http.client
-# todo pull based on time
-# todo figure out format
+import time
 import http.server
 import requests
 import argparse
@@ -66,13 +65,7 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
                 print('running sample')
                 # Create the BlockBlockService that is used to call the Blob service for the storage account
                 block_blob_service = BlockBlobService(account_name=storage_account_name, account_key=storage_account_key)
-                print('ummm')
-                # Create a container called 'quickstartblobs'.
-                
-                block_blob_service.create_container(container_name)
-                # Set the permission so the blobs are public.
-                block_blob_service.set_container_acl(container_name, public_access=PublicAccess.Container)
-                print('fjaskfjaskfakjskdfj')
+
                 # Create a file in Documents to test the upload and download.
                 local_path=''
                 local_file_name ="model.pkl.bz"
@@ -82,13 +75,20 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
                 print("\nUploading to Blob storage as blob" + local_file_name)
 
                 # Upload the created file, use local_file_name for the blob name
-                block_blob_service.create_blob_from_path(container_name, local_file_name, full_path_to_file)
+                block_blob_service.create_blob_from_path(container_name, str(int(time.time())) + '.pkl.bz' , full_path_to_file)
 
-                # List the blobs in the container
-                print("\nList blobs in the container")
+                # delete old models
                 generator = block_blob_service.list_blobs(container_name)
+                print(type(generator))
+                list_blobs = []
                 for blob in generator:
-                    print("\t Blob name: " + blob.name)
+                    list_blobs.append(blob.name)
+                list_blobs = sorted(list_blobs, reverse=True)
+                if len(list_blobs) > 3:
+                    for outdated_blob_name in list_blobs[3:]:
+                        block_blob_service.delete_blob(container_name, outdated_blob_name)
+
+
             except Exception as e:
                 print('i am here uh oh')
                 print(e)

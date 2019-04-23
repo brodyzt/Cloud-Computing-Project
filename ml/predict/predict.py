@@ -60,14 +60,17 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             storage_account_name = os.environ['STORAGE_ACCT_NAME']
             storage_account_key = os.environ['STORAGE_ACCT_KEY']
             container_name = os.environ['BLOB_CONTAINER_NAME']
-            print(storage_account_name)
-            print(storage_account_key)
-            print(container_name)
-            print('running sample')
             # Create the BlockBlockService that is used to call the Blob service for the storage account
             block_blob_service = BlockBlobService(account_name=storage_account_name, account_key=storage_account_key)
-            print('ummm')
-            block_blob_service.get_blob_to_path(container_name, 'model.pkl.bz', 'model.pkl.bz')
+
+            generator = block_blob_service.list_blobs(container_name)
+            print(type(generator))
+            list_blobs = []
+            for blob in generator:
+                list_blobs.append(blob.name)
+            list_blobs = sorted(list_blobs, reverse=True) 
+
+            block_blob_service.get_blob_to_path(container_name, list_blobs[0], 'model.pkl.bz')
             file = bz2.BZ2File('model.pkl.bz','rb')
             SimpleRequestHandler.model = pickle.load(file)
             file.close()

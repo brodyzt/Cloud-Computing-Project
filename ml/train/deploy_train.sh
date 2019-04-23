@@ -29,4 +29,5 @@ az acr list --resource-group $myResourceGroup --query "[].{acrLoginServer:loginS
 kubectl apply -f train_deployment.yaml
 kubectl apply -f train_service.yaml
 #if deploying the same name again
-# rm ~/.kube/config 
+# rm ~/.kube/config
+kubectl apply -f cron_retrain.yaml 
