@@ -1,9 +1,10 @@
 module.exports = async function (context, req) {
+    context.log("Starting:")
     if (req.body) {
 
         //TODO: add case statement for birth event vs sensor update
         var event_type = req.body[0].eventType;
-        // context.log(req.rawbody);
+        context.log(req.rawbody);
 
         if (event_type == 'update') {
             //for sharding on "farm id"
@@ -12,7 +13,11 @@ module.exports = async function (context, req) {
             //write to Cosmos DB
             //change the name [cowData] to whatever the document parameter name is
             // TODO: ADD ID FIELD TO JSON
-            context.bindings.cowData = req.body[0].data;
+            let request_data = req.body[0].data;
+            request_data["id"] = req.body[0].cowId;
+            request_data["time_received"] = Date.now();
+
+            // context.bindings.cowData = request_data;
 
             //extract parameters for the ML model 
             var cowId = req.body[0].cowId;
@@ -37,8 +42,36 @@ module.exports = async function (context, req) {
 
             context.log(cowId);
 
+
+            //make a get request to the predictive service
+            const http = require('http');
+
+            const url = "http://137.117.37.247/predict?" + str_to_send;
+            context.log(url);
+
+
+            var req = http.get(url, function (res) {
+                // context.log(res)
+                var chunks = [];
+
+                res.on("data", function (chunk) {
+                    chunks.push(chunk);
+                });
+
+                res.on("end", function () {
+                    var body = Buffer.concat(chunks);
+                    context.log(body.toString());
+                });
+            });
+
+            req.end();
+
+            var temp = await req;
+            return temp;
+
+
             //code for sending a message to cowzure notifications 
-            var http = require("https");
+            var https = require("https");
 
             let message_content = "Cow " + cowId + " is going to calve soon. GET READY TO RUMBLE!!";
 
@@ -53,7 +86,7 @@ module.exports = async function (context, req) {
                 }
             };
 
-            var req = http.request(options, function (res) {
+            req = https.request(options, function (res) {
                 var chunks = [];
 
                 res.on("data", function (chunk) {
@@ -79,7 +112,7 @@ module.exports = async function (context, req) {
             }));
             req.end();
 
-            req = http.request(options, function (res) {
+            req = https.request(options, function (res) {
                 var chunks = [];
 
                 res.on("data", function (chunk) {
@@ -104,7 +137,7 @@ module.exports = async function (context, req) {
             }));
             req.end();
 
-            req = http.request(options, function (res) {
+            req = https.request(options, function (res) {
                 var chunks = [];
 
                 res.on("data", function (chunk) {
@@ -171,4 +204,10 @@ module.exports = async function (context, req) {
     } else {
         context.log("Request Body empty");
     }
+
+    setTimeout(function () {
+        while (true) {
+
+        }
+    }, 5000)
 };
