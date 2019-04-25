@@ -11,13 +11,15 @@ spec:
     spec:
       containers:
       - name: trainapp
-        image: cowzurecontainerreg.azurecr.io/train_img:v5
+        image: cowzurecontainerreg.azurecr.io/train_img:v8
         ports:
         - containerPort: 8000 # should match docker file
         env:
         - name: STORAGE_ACCT_NAME
           value: storageeacct
         - name: STORAGE_ACCT_KEY
-          value: +aROPLVyqGPkM9irWkq2LDB8NtThmTd+f75TkU/XVTkWFnPBOTCQeNjLou7N1F+kYdgDLwhOZoe5msOcntd2uA==
+          value: 0nctwAhQ2PdTGABwe3ciJMPHQsRAZlILrRccCaXKe8LK0MOBMWH6qGP/8qTvEpUlidUpjLMj5wKJ0tu/Cg7MCQ==
         - name: BLOB_CONTAINER_NAME
           value: blobcontainer
+        - name: PREDICT_SERVICE_IP
+          value: 40.121.219.50

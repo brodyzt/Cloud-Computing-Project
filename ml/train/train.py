@@ -95,13 +95,9 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_POST(self):
         print (self.path)
-        # time to broadcast the model
-        if self.path == '/trigger':
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(pickle.dumps(SimpleRequestHandler.model))
+            
         # receiving new data
-        elif self.path == '/data':
+        if self.path == '/data':
             ######### FETCH INPUTS ###############
             # hardcoded vals
             # y = # hours to calving
@@ -120,6 +116,7 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
 
             # x = [] of [] : rumination-raw-data, weekly_ruminatino_average, raw_activity,daily_activity
             x = np.concatenate((z_c,a_c))
+
 
             
 
@@ -141,10 +138,12 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             file.close()
             print('trying to save to storage')
             SimpleRequestHandler.save_to_storage()
+            predict_service_ip = os.environ['PREDICT_SERVICE_IP']
+            conn = http.client.HTTPConnection(predict_service_ip)
+            conn.request("POST", "model", {},{})
             self.send_response(200)
             self.end_headers()
-        
-            
+                        
             
 def run(server_class=http.server.HTTPServer,
     handler_class=SimpleRequestHandler):
