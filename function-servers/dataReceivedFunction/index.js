@@ -17,7 +17,7 @@ module.exports = async function (context, req) {
             request_data["id"] = req.body[0].cowId;
             request_data["time_received"] = Date.now();
 
-            // context.bindings.cowData = request_data;
+            context.bindings.cowData = request_data;
 
             //extract parameters for the ML model 
             var cowId = req.body[0].cowId;
@@ -46,7 +46,7 @@ module.exports = async function (context, req) {
             //make a get request to the predictive service
             const http = require('http');
 
-            const url = "http://137.117.37.247/predict?" + str_to_send;
+            const url = "http://40.121.219.50/predict?" + str_to_send;
             context.log(url);
 
 

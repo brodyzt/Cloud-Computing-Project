@@ -1,2 +1,2 @@
 ID,LACT,Time_Born,AdjTime,N_CALVES,CSEX,NUM_DEAD,AGEFDAT,CINT,GEST,PDIM,DDRY,PDOPN,PREFR,PTOTF,PTOTM,PTOTS,EASE,Time,Raw_Activity_Data,Activity_Change,Activity_Change_by_2_Hours,Rumination_Raw_Data,Weighted_Rumination_Change,Rumination_Deviation_by_2_Hours,Total_Rumination_Minutes_In_Last,Daily_Rumination,Weekly_Rumination_Average,Group,new_health_index,Daily_activity,parity,Day,Period,CalvingYN,newvar,period_to_calving
-12739,1,0:10,0:00,1,F,0,668,,276,,,,30,,,,2,0:00,60,12,12.2,2,-43,-18.12,412,337,575,,,705,1,0,0,1,0,0
+12739,1,0:10,0:00,1,F,0,668,,276,,,,30,,,,2,0:00,60,12,12.2,2,-43,-18.12,412,337,575,20,,705,1,0,0,1,0,0

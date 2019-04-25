@@ -9,6 +9,10 @@ with open('ANSC-CS Data-CalvingPredictionSCR.csv') as csv_file:
     for row in readCSV:
         #this is cow id
         cow_id = row[0]
+        #add group if not there
+        if not row[28]:
+            row[28] = "20"
+
         if cow_id not in result:
             result[cow_id] = [row]
         else:
