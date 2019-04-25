@@ -13,9 +13,10 @@ module.exports = async function (context, req) {
             //write to Cosmos DB
             //change the name [cowData] to whatever the document parameter name is
             // TODO: ADD ID FIELD TO JSON
+            let current_time = Date.now();
             let request_data = req.body[0].data;
-            request_data["id"] = req.body[0].cowId;
-            request_data["time_received"] = Date.now();
+            request_data.id = String(req.body[0].cowId + "_" + current_time);
+            request_data.time_received = current_time;
 
             context.bindings.cowData = request_data;
 
@@ -49,26 +50,27 @@ module.exports = async function (context, req) {
             const url = "http://40.121.219.50/predict?" + str_to_send;
             context.log(url);
 
+            var ml_req;
 
-            var req = http.get(url, function (res) {
-                // context.log(res)
-                var chunks = [];
+            let promise = new Promise(function (resolve, reject) {
+                ml_req = http.get(url, function (res) {
+                    // context.log(res)
+                    var chunks = [];
 
-                res.on("data", function (chunk) {
-                    chunks.push(chunk);
-                });
+                    res.on("data", function (chunk) {
+                        chunks.push(chunk);
+                    });
 
-                res.on("end", function () {
-                    var body = Buffer.concat(chunks);
-                    context.log(body.toString());
+                    res.on("end", function () {
+                        var body = Buffer.concat(chunks);
+                        context.log(body.toString());
+                        resolve();
+                    });
                 });
             });
 
-            req.end();
-
-            var temp = await req;
-            return temp;
-
+            await promise;
+            ml_req.end();
 
             //code for sending a message to cowzure notifications 
             var https = require("https");
@@ -200,14 +202,24 @@ module.exports = async function (context, req) {
         //     //save the event in the birth table
         //     context.bindings.birthData = birth;
         // }
-
     } else {
         context.log("Request Body empty");
     }
 
-    setTimeout(function () {
-        while (true) {
-
-        }
-    }, 5000)
 };
+
+// module.exports = async function (context, req) {
+
+//     let promise = new Promise(function (resolve, reject) {
+//         setTimeout(_ => {
+//             context.log("here");
+//             context.log("yes");
+//             resolve(5);
+//         }, 5000)
+//     });
+
+//     await promise;
+
+
+//     context.log(5);
+// }
