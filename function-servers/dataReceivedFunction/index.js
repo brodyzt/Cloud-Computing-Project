@@ -15,7 +15,7 @@ module.exports = async function (context, req) {
             // TODO: ADD ID FIELD TO JSON
             let current_time = Date.now();
             let request_data = req.body[0].data;
-            request_data.id = String(req.body[0].cowId) + "_" + current_time);
+            request_data.id = String(req.body[0].cowId + "_" + current_time);
             request_data.time_received = current_time;
 
             context.bindings.cowData = request_data;
