@@ -160,4 +160,3 @@ fs.readdir('fake_cow_data', (err, files) => {
         })
     });
 });
-
