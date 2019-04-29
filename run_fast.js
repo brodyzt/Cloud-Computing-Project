@@ -41,7 +41,7 @@ class Sensor {
 
     start() {
         // Register first callback for 5 to 20 seconds
-        setTimeout(this.timer, 0, this);
+        setTimeout(this.timer, 1, this);
     }
 
     // add a function to read from csv and return the right row
@@ -60,7 +60,7 @@ class Sensor {
     //retrieves the next row to send and increments counter
     getRow() {
         var row_to_return = this._rows[this._index];
-        this._index = this._index + 1;
+        // this._index = this._index + 1;
         return row_to_return;
     }
 
@@ -78,13 +78,14 @@ class Sensor {
         if (self._ready === true) {
             // "Trigger" the sensor with the next row to send
             var row = self.getRow(self._csv);
-            var event_type = self.getEventType();
 
-            var should_continue = self.trigger(row, event_type, (err, result) => {});
+            var should_continue = self.trigger(row, (err, result) => {});
+
+            setTimeout(self.timer, 1, self);
 
             // // Register another callback for 5 to 20 seconds
             if (should_continue) {
-                setTimeout(self.timer, 0, self);
+                setTimeout(self.timer, 1, self);
             }
             else {
                 console.log('out of data to send');
@@ -92,17 +93,18 @@ class Sensor {
         }
     }
     //replace imageFileName with csvRow
-    trigger(row, event_type, callback) {
+    trigger(row, callback) {
         if (this._ready === true) {
             // Send an event to the IoT hub
-            this.send(row, event_type, (err, result) => {
+            this.send(row, (err, result) => {
                 console.log(this._id + ' sent row #' + this._index);
                 callback(err, result);
             });
 
             //TODO: have it stop when the file is out
             if (this._index == this._rows.length) {
-                return false;
+                this._index == 0;
+                return true;
             }
             else {
                 return true;
@@ -110,14 +112,13 @@ class Sensor {
         }
     }
 
-    send(row, event_type, callback) {
+    send(row, callback) {
         var Message = require('azure-iot-device').Message;
 
         var data = {
             'sensorId': this._id,
             'cowId': this._cowId,
             'data': row,
-            'eventType': event_type,
             'timestamp': new Date().toISOString()
         };
 
@@ -145,7 +146,7 @@ fs.readdir('fake_cow_data', (err, files) => {
             sensor.deviceId,
             sensor.cowId,
             sensor.key,
-            'ANSC-CS-Data-CalvingPredictionSCR.csv'
+            'fake_cow_data_with_birth/' + (files.filter((file) => file === (sensor.cowId + '.csv'))[0])
         )
     );
 
