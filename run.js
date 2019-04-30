@@ -76,9 +76,21 @@ class Sensor {
         if (self._ready === true) {
             // "Trigger" the sensor with the next row to send
             var row = self.getRow(self._csv);
+
+            //filter fields to only include real-time data
+            const fields = ["ID", "Time", "Raw_Activity_Data", "Activity_Change", "Activity_Change_by_2_Hours", 
+            "Rumination_Raw_Data", "Weighted_Rumination_Change", "Rumination_Deviation_by_2_Hours", "Total_Rumination_Minutes_In_Last",
+            "Daily_Rumination", "Weekly_Rumination_Average", "Group", "New_health_index", "Daily_activity", "period_to_calving"];
+
+            var new_row = {};
+
+            fields.forEach(field => {
+                new_row[field] = row[field];
+            });
+
             var event_type = self.getEventType();
 
-            var should_continue = self.trigger(row, event_type, (err, result) => {});
+            var should_continue = self.trigger(new_row, event_type, (err, result) => {});
 
             // // Register another callback for 5 to 20 seconds
             if (should_continue) {
