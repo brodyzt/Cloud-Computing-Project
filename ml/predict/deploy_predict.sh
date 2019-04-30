@@ -1,11 +1,11 @@
 # start docker first
 docker tag predict_img cowzurecontainerreg.azurecr.io/predict_img:v1
-export myResourceGroup='myResourceGroup'
+export myResourceGroup='backend-server-group'
 export cowzureContainerReg='cowzureContainerReg'
 
 az acr login --name $cowzureContainerReg
 az acr list --resource-group $myResourceGroup --query "[].{acrLoginServer:loginServer}" --output table
-docker push cowzurecontainerreg.azurecr.io/predict_img:v1
+docker push cowzurecontainerreg.azurecr.io/predict_img:v5
 rbac_assign=$(az ad sp create-for-rbac --skip-assignment)
 app_id=$(echo "$rbac_assign"|jq -r ".appId")
 pw=$(echo "$rbac_assign"|jq -r ".password")

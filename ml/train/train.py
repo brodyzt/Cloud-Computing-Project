@@ -7,10 +7,10 @@ import bz2
 import os
 import urllib.parse
 import http.client
-# todo pull based on time
-# todo figure out format
+import time
 import http.server
 import requests
+import argparse
 
 class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
     
@@ -52,18 +52,54 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             conn = http.client.HTTPConnection("http://predictapp", 8080) # TODO change
             conn.request("POST", "/model", urllib.parse.urlencode(params), headers)
 
+    def save_to_storage():
+            import os, uuid, sys
+            from azure.storage.blob import BlockBlobService, PublicAccess
+            try:
+                storage_account_name = os.environ['STORAGE_ACCT_NAME']
+                storage_account_key = os.environ['STORAGE_ACCT_KEY']
+                container_name = os.environ['BLOB_CONTAINER_NAME']
+                print(storage_account_name)
+                print(storage_account_key)
+                print(container_name)
+                print('running sample')
+                # Create the BlockBlockService that is used to call the Blob service for the storage account
+                block_blob_service = BlockBlobService(account_name=storage_account_name, account_key=storage_account_key)
+
+                # Create a file in Documents to test the upload and download.
+                local_path=''
+                local_file_name ="model.pkl.bz"
+                full_path_to_file =os.path.join(local_path, local_file_name)
+
+                print("Temp file = " + full_path_to_file)
+                print("\nUploading to Blob storage as blob" + local_file_name)
+
+                # Upload the created file, use local_file_name for the blob name
+                block_blob_service.create_blob_from_path(container_name, str(int(time.time())) + '.pkl.bz' , full_path_to_file)
+
+                # delete old models
+                generator = block_blob_service.list_blobs(container_name)
+                print(type(generator))
+                list_blobs = []
+                for blob in generator:
+                    list_blobs.append(blob.name)
+                list_blobs = sorted(list_blobs, reverse=True)
+                if len(list_blobs) > 3:
+                    for outdated_blob_name in list_blobs[3:]:
+                        block_blob_service.delete_blob(container_name, outdated_blob_name)
+
+
+            except Exception as e:
+                print('i am here uh oh')
+                print(e)
+
     def do_POST(self):
         print (self.path)
-        # time to broadcast the model
-        if self.path == '/trigger':
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(pickle.dumps(SimpleRequestHandler.model))
+            
         # receiving new data
-        elif self.path == '/data':
+        if self.path == '/data':
             ######### FETCH INPUTS ###############
             # hardcoded vals
-            # TODO fix this
             # y = # hours to calving
             z_p = pandas.read_csv('11457_new.csv')
             a_p = pandas.read_csv('11065_new.csv')
@@ -80,6 +116,7 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
 
             # x = [] of [] : rumination-raw-data, weekly_ruminatino_average, raw_activity,daily_activity
             x = np.concatenate((z_c,a_c))
+
 
             
 
@@ -99,7 +136,14 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             SimpleRequestHandler.model = n
             pickle.dump(n, file)
             file.close()
-            
+            print('trying to save to storage')
+            SimpleRequestHandler.save_to_storage()
+            predict_service_ip = os.environ['PREDICT_SERVICE_IP']
+            conn = http.client.HTTPConnection(predict_service_ip)
+            conn.request("POST", "model", {},{})
+            self.send_response(200)
+            self.end_headers()
+                        
             
 def run(server_class=http.server.HTTPServer,
     handler_class=SimpleRequestHandler):

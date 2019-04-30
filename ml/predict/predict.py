@@ -47,16 +47,32 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         print('posted')
         if self.path == '/model':
-            model_serialized = self.rfile.read(int(self.headers['Content-Length']))
-            # this is identical to the quoed version which is good! type is in STRING
-            quoted_model = urllib.parse.parse_qs(model_serialized)[b'model_serialized'][0].decode('utf-8')
-            print(quoted_model)
-            # now i need to unquote
-            unquoted_model = urllib.parse.unquote_to_bytes(quoted_model)
-            print(unquoted_model)
-            SimpleRequestHandler.model = pickle.loads(unquoted_model)
-            file = bz2.BZ2File('model.pkl.bz','wb')
-            pickle.dump(SimpleRequestHandler.model, file)
+            # model_serialized = self.rfile.read(int(self.headers['Content-Length']))
+            # # this is identical to the quoed version which is good! type is in STRING
+            # quoted_model = urllib.parse.parse_qs(model_serialized)[b'model_serialized'][0].decode('utf-8')
+            # print(quoted_model)
+            # # now i need to unquote
+            # unquoted_model = urllib.parse.unquote_to_bytes(quoted_model)
+            # print(unquoted_model)
+
+            import os, uuid, sys
+            from azure.storage.blob import BlockBlobService, PublicAccess
+            storage_account_name = os.environ['STORAGE_ACCT_NAME']
+            storage_account_key = os.environ['STORAGE_ACCT_KEY']
+            container_name = os.environ['BLOB_CONTAINER_NAME']
+            # Create the BlockBlockService that is used to call the Blob service for the storage account
+            block_blob_service = BlockBlobService(account_name=storage_account_name, account_key=storage_account_key)
+
+            generator = block_blob_service.list_blobs(container_name)
+            print(type(generator))
+            list_blobs = []
+            for blob in generator:
+                list_blobs.append(blob.name)
+            list_blobs = sorted(list_blobs, reverse=True) 
+
+            block_blob_service.get_blob_to_path(container_name, list_blobs[0], 'model.pkl.bz')
+            file = bz2.BZ2File('model.pkl.bz','rb')
+            SimpleRequestHandler.model = pickle.load(file)
             file.close()
 
             self.send_response(200)
