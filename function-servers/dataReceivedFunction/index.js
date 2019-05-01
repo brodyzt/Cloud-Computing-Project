@@ -58,155 +58,132 @@ module.exports = async function (context, req) {
                 var ml_req;
                 const time_before = Date.now()
 
-                // let promise = new Promise(function (resolve, reject) {
-                //     ml_req = http.get(url, function (res) {
-                //         // context.log(res)
-                //         var chunks = [];
+                let promise = new Promise(function (resolve, reject) {
+                    ml_req = http.get(url, function (res) {
+                        // context.log(res)
+                        var chunks = [];
 
-                //         res.on("data", function (chunk) {
-                //             chunks.push(chunk);
-                //         });
+                        res.on("data", function (chunk) {
+                            chunks.push(chunk);
+                        });
 
-                //         res.on("end", function () {
-                //             var body = Buffer.concat(chunks);
-                //             context.log(body.toString());
-                //             resolve();
-                //         });
-                //     });
-                // });
+                        res.on("end", function () {
+                            var body = Buffer.concat(chunks);
+                            context.log(body.toString());
 
-                // await promise;
-                // ml_req.end();
+                            if (parseInt(body.toString()) >= -2) {
+
+
+
+                                //code for sending a message to cowzure notifications 
+                                var https = require("https");
+
+                                let message_content = "Cow " + cowId + " is going to calve soon. GET READY TO RUMBLE!!";
+
+                                context.log(message_content);
+
+                                var options = {
+                                    "method": "POST",
+                                    "hostname": "graph.facebook.com",
+                                    "path": "/v2.6/me/messages?access_token=EAAI9ZBfZC3t3ABAOG78gZBfeqXkVPALU4HqIDPuiNCpuhaRgGV3LNZBeXsnfCoty4c4IryZAIRNAQj3nKxM5NPd5yMDIpmQrMsdIJ2CFkECVH4W9ZCXyYa8mZCKa8LuzsGuoQweU8O8G6M9tr06AqMMqgVfQK00B7Q5OSzVZAZBK0oeWeMYg7vZATO",
+                                    "headers": {
+                                        "Content-Type": "application/json",
+                                    }
+                                };
+
+                                req = https.request(options, function (res) {
+                                    var chunks = [];
+
+                                    res.on("data", function (chunk) {
+                                        chunks.push(chunk);
+                                    });
+
+                                    res.on("end", function () {
+                                        var body = Buffer.concat(chunks);
+                                        console.log(body.toString());
+                                    });
+                                });
+
+
+                                // Zack
+                                req.write(JSON.stringify({
+                                    messaging_type: 'UPDATE',
+                                    recipient: {
+                                        id: '2554453011237103'
+                                    },
+                                    message: {
+                                        text: message_content
+                                    }
+                                }));
+                                req.end();
+
+                                req = https.request(options, function (res) {
+                                    var chunks = [];
+
+                                    res.on("data", function (chunk) {
+                                        chunks.push(chunk);
+                                    });
+
+                                    res.on("end", function () {
+                                        var body = Buffer.concat(chunks);
+                                        console.log(body.toString());
+                                    });
+                                });
+
+                                // Janice
+                                req.write(JSON.stringify({
+                                    messaging_type: 'UPDATE',
+                                    recipient: {
+                                        id: '2101586909879073'
+                                    },
+                                    message: {
+                                        text: message_content
+                                    }
+                                }));
+                                req.end();
+
+                                req = https.request(options, function (res) {
+                                    var chunks = [];
+
+                                    res.on("data", function (chunk) {
+                                        chunks.push(chunk);
+                                    });
+
+                                    res.on("end", function () {
+                                        var body = Buffer.concat(chunks);
+                                        console.log(body.toString());
+                                    });
+                                });
+
+                                // Michelle
+                                req.write(JSON.stringify({
+                                    messaging_type: 'UPDATE',
+                                    recipient: {
+                                        id: '2630309163652234'
+                                    },
+                                    message: {
+                                        text: message_content
+                                    }
+                                }));
+
+                                // End
+                                req.end();
+                            }
+
+                            resolve();
+                        });
+                    });
+                });
+
+                await promise;
+                ml_req.end();
                 const time_for_ml_run = Date.now() - time_before;
 
                 context.bindings.latencyOutput = {
                     "runtime": time_for_ml_run
                 }
 
-
-                //code for sending a message to cowzure notifications 
-                var https = require("https");
-
-                let message_content = "Cow " + cowId + " is going to calve soon. GET READY TO RUMBLE!!";
-
-                context.log(message_content);
-
-                var options = {
-                    "method": "POST",
-                    "hostname": "graph.facebook.com",
-                    "path": "/v2.6/me/messages?access_token=EAAI9ZBfZC3t3ABAOG78gZBfeqXkVPALU4HqIDPuiNCpuhaRgGV3LNZBeXsnfCoty4c4IryZAIRNAQj3nKxM5NPd5yMDIpmQrMsdIJ2CFkECVH4W9ZCXyYa8mZCKa8LuzsGuoQweU8O8G6M9tr06AqMMqgVfQK00B7Q5OSzVZAZBK0oeWeMYg7vZATO",
-                    "headers": {
-                        "Content-Type": "application/json",
-                    }
-                };
-
-                // req = https.request(options, function (res) {
-                //     var chunks = [];
-
-                //     res.on("data", function (chunk) {
-                //         chunks.push(chunk);
-                //     });
-
-                //     res.on("end", function () {
-                //         var body = Buffer.concat(chunks);
-                //         console.log(body.toString());
-                //     });
-                // });
-
-
-                // // Zack
-                // req.write(JSON.stringify({
-                //     messaging_type: 'UPDATE',
-                //     recipient: {
-                //         id: '2554453011237103'
-                //     },
-                //     message: {
-                //         text: message_content
-                //     }
-                // }));
-                // req.end();
-
-                // req = https.request(options, function (res) {
-                //     var chunks = [];
-
-                //     res.on("data", function (chunk) {
-                //         chunks.push(chunk);
-                //     });
-
-                //     res.on("end", function () {
-                //         var body = Buffer.concat(chunks);
-                //         console.log(body.toString());
-                //     });
-                // });
-
-                // // Janice
-                // req.write(JSON.stringify({
-                //     messaging_type: 'UPDATE',
-                //     recipient: {
-                //         id: '2101586909879073'
-                //     },
-                //     message: {
-                //         text: message_content
-                //     }
-                // }));
-                // req.end();
-
-                // req = https.request(options, function (res) {
-                //     var chunks = [];
-
-                //     res.on("data", function (chunk) {
-                //         chunks.push(chunk);
-                //     });
-
-                //     res.on("end", function () {
-                //         var body = Buffer.concat(chunks);
-                //         console.log(body.toString());
-                //     });
-                // });
-
-                // // Michelle
-                // req.write(JSON.stringify({
-                //     messaging_type: 'UPDATE',
-                //     recipient: {
-                //         id: '2630309163652234'
-                //     },
-                //     message: {
-                //         text: message_content
-                //     }
-                // }));
-
-                // // End
-                // req.end();
-
-                // make a get request to the predictive service
-                // const https = require('https');
-                // https.get('https://api.nasa.gov/planetary/apod?inputs=' + str_to_send, (resp) => {
-                //     let data = '';
-
-                //     // A chunk of data has been recieved.
-                //     resp.on('data', (chunk) => {
-                //         data += chunk;
-                //     });
-
-                //     // The whole response has been received. Print out the result.
-                //     resp.on('end', () => {
-                //         console.log(JSON.parse(data).explanation);
-                //     });
-
-                // }).on("error", (err) => {
-                // console.log("Error: " + err.message);
-                // });
             }
-
-            // const request = require('request');
-
-            //     //TODO: change url to actual model
-            //     request('https://api.nasa.gov/planetary/apod?inputs=' + str_to_send, { json: true }, (err, res, body) => {
-            //         if (err) { return console.log(err); }
-            //         console.log(body.url);
-            //         console.log(body.explanation);
-            //     });
-            // }
 
             //processing for a birth event
             // else {
@@ -225,19 +202,3 @@ module.exports = async function (context, req) {
     }
 
 };
-
-// module.exports = async function (context, req) {
-
-//     let promise = new Promise(function (resolve, reject) {
-//         setTimeout(_ => {
-//             context.log("here");
-//             context.log("yes");
-//             resolve(5);
-//         }, 5000)
-//     });
-
-//     await promise;
-
-
-//     context.log(5);
-// }
