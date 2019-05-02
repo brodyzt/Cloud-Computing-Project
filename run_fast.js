@@ -54,6 +54,7 @@ class Sensor {
         .on('data', (data) => results.push(data))
         .on('end', () => {
             this._rows = results;
+            this._index = results.length -1;
         });
     }
 

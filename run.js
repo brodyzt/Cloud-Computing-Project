@@ -52,19 +52,20 @@ class Sensor {
         .on('data', (data) => results.push(data))
         .on('end', () => {
             this._rows = results;
+            this._index = results.length -1;
         });
     }
 
     //retrieves the next row to send and increments counter
     getRow() {
         var row_to_return = this._rows[this._index];
-        this._index = this._index + 1;
+        this._index = this._index - 1;
         return row_to_return;
     }
 
     //checks the type of the row--either "update" or "birth"
     getEventType() {
-        if (this._rows[this._index - 1].ID == 'BIRTH') {
+        if (this._rows[this._index + 1].ID == 'BIRTH') {
             return "birth";
         }
         else {
