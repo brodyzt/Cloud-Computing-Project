@@ -78,6 +78,7 @@ def run_query(input_query, HOST, MASTER_KEY, DATABASE_ID, COLLECTION_ID):
             
             y_numpy_array = np.array(y_return_array)
             y_numpy_array = y_numpy_array[~nan_idx]
+            y_numpy_array = [1 if y >= -10 else 0 for y in y_numpy_array]
             
             return numpy_array, y_numpy_array
         except errors.HTTPFailure as e:
