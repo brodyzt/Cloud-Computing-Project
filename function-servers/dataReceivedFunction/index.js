@@ -1,23 +1,15 @@
 module.exports = async function (context, req) {
     context.log("Starting:")
-    context.log(req.rawbody);
 
     if (req.body) {
         const datum = req.body[0];
+        // context.log(datum);
 
-        context.log("Datum: ")
-        context.log(datum)
-
-        //TODO: add case statement for birth event vs sensor update
         var event_type = datum.eventType;
 
         if (event_type == 'update') {
-            //for sharding on "farm id"
-            context.log(datum.data.Group);
-
             //write to Cosmos DB
             //change the name [cowData] to whatever the document parameter name is
-            // TODO: ADD ID FIELD TO JSON
             let current_time = Date.now();
             let request_data = datum.data;
             request_data.id = String(datum.cowId + "_" + current_time);
@@ -27,40 +19,23 @@ module.exports = async function (context, req) {
 
             //extract parameters for the ML model 
             var cowId = datum.cowId;
-            var rum_raw = datum.data.Rumination_Raw_Data;
+            var daily_rum = datum.data.Daily_Rumination;
             var weekly_rum = datum.data.Weekly_Rumination_Average;
-            var raw_act = datum.data.Raw_Activity_Data;
-            var daily_act = datum.data.Daily_activity;
 
             //create the string to send to the predictive service
-            var format_thing = 'inputs%5B%5D=';
-            var str_to_send = '';
-            var fields = [rum_raw, weekly_rum, raw_act, daily_act];
-
-            for (var i = 0; i < fields.length; i++) {
-                //check if it's the last one, if so, don't append &
-                if (i == fields.length - 1) {
-                    str_to_send += format_thing + fields[i];
-                } else {
-                    str_to_send += format_thing + fields[i] + '&';
-                }
-            }
-
-            context.log(cowId);
-
+            var rumination_amount = daily_rum / weekly_rum;
+            var str_to_send = 'inputs%5B%5D=' + String(rumination_amount);
 
             //make a get request to the predictive service
             const http = require('http');
 
-            const url = "http://40.122.29.30/predict?" + str_to_send;
-            context.log(url);
+            const url = "http://23.99.139.81/predict?" + str_to_send;
 
             var ml_req;
             const time_before = Date.now()
 
             let promise = new Promise(function (resolve, reject) {
                 ml_req = http.get(url, function (res) {
-                    // context.log(res)
                     var chunks = [];
 
                     res.on("data", function (chunk) {
@@ -69,13 +44,10 @@ module.exports = async function (context, req) {
 
                     res.on("end", function () {
                         var body = Buffer.concat(chunks);
-                        context.log("ML response:")
-                        context.log(body.toString());
 
-                        if (parseInt(body.toString()) >= -2) {
-
-
-
+                        //our model predicts whether the cow will give birth in the next 10 periods (20 hours)
+                        //so we can verify our accuracy this way;
+                        if ((parseInt(body.toString()) == 1) && (datum.data.period_to_calving >= -10)) {
                             //code for sending a message to cowzure notifications 
                             var https = require("https");
 
@@ -187,11 +159,11 @@ module.exports = async function (context, req) {
         }
 
         //processing for a birth event
-        // else {
-        //     var birth = { cowId = datum.cowId, timeBorn = datum.Time_Born, timeStamp = Date.now() };
-        //     //save the event in the birth table
-        //     context.bindings.birthData = birth;
-        // }
+        else {
+            var birth = { "cowId":datum.cowId, "timeBorn" : datum.Time_Born, "timeStamp" : Date.now() };
+            //save the event in the birth table
+            context.bindings.birthData = birth;
+        }
 
     } else {
         context.log("Request Body empty");

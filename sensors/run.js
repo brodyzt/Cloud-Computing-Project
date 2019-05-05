@@ -39,7 +39,7 @@ class Sensor {
 
     start() {
         // Register first callback for 5 to 20 seconds
-        setTimeout(this.timer, 12.5, this);
+        setTimeout(this.timer, 1000, this);
     }
 
     // add a function to read from csv and return the right row
@@ -94,7 +94,7 @@ class Sensor {
 
             // // Register another callback for 5 to 20 seconds
             if (should_continue) {
-                setTimeout(self.timer, 12.5, self);
+                setTimeout(self.timer, 1000, self);
             }
             else {
                 console.log('out of data to send');

@@ -15,4 +15,7 @@ Our folder structure is as follows:<br>
 * **fake_cow_data_with_birth**: contains a csv for each cow. Cows that gave birth during the 120 periods we have data for have the line "BIRTH" appended to their csv.<br>
 * **evaluation**: contains our evaluation script and stress testing script.<br>
 * **sensors**: contains files that: declare our sensors, register them with the IoT hub, and allow them to send data from the cow files. Do node run.js in the terminal to send data from our sensors. <br>
+* **function-servers**: contains our files related to our function server on Azure. The folder named dataReceivedFunction has a file named index.js that is the code in our function on the function server.<br> 
+* **stream-analytics**: contains a template file that shows our setup in Stream Analytics. <br>
+* **ml**: contains our predictive and training ML code.<br>
 

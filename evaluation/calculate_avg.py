@@ -44,7 +44,7 @@ class IDisposable(cosmos_client.CosmosClient):
         # extra cleanup in here
         self = None
 
-def run_query(input_query, HOST, MASTER_KEY, DATABASE_ID, COLLECTION_ID):
+def run_query(input_query, HOST, MASTER_KEY, DATABASE_ID, COLLECTION_ID, csv_name):
     
     
     database_link = 'dbs/' + DATABASE_ID
@@ -70,10 +70,14 @@ def run_query(input_query, HOST, MASTER_KEY, DATABASE_ID, COLLECTION_ID):
                 num_rows += 1
 
             #write all the rows to csv    
-            
+            with open(csv_name, mode='w') as csv_file:
+                csv_file.write('runtime\n')
+                for row in rows:
+                    csv_file.write(row + '\n')   
+
             print(float(tot_sum)/num_rows)
         except errors.HTTPFailure as e:
             print(e)
 
 
-run_query('SELECT * FROM server s', 'https://edgeserverdatabaseaccount.documents.azure.com:443/', 'ZdYMlvNLJQHsVmInhEeNafE1vNEeRNjl5s4LaDR0Vz7JI7Bw2kHfXu0LznwY8UG36q3Ge7MqaYVQcJyBixcSvA==', 'edgeserverdatabase', 'latencyData')
+run_query('SELECT * FROM server s', 'https://edgeserverdatabaseaccount.documents.azure.com:443/', 'ZdYMlvNLJQHsVmInhEeNafE1vNEeRNjl5s4LaDR0Vz7JI7Bw2kHfXu0LznwY8UG36q3Ge7MqaYVQcJyBixcSvA==', 'edgeserverdatabase', 'latencyData', 'one_req_per_sec')

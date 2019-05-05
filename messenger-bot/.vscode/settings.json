@@ -1,7 +1,0 @@
-{
-    "appService.zipIgnorePattern": [
-        ".vscode{,/**}"
-    ],
-    "appService.defaultWebAppToDeploy": "/subscriptions/b664c1d5-e0b0-403a-9152-d8926eaa02ef/resourceGroups/appsvc_rg_Linux_eastus/providers/Microsoft.Web/sites/cowzurenotifications",
-    "appService.deploySubpath": ""
-}
