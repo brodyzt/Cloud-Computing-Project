@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: predictapp
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -11,13 +11,13 @@ spec:
     spec:
       containers:
       - name: predictapp
-        image: cowzurecontainerreg.azurecr.io/predict_img:v5
+        image: cowzurecontainerreg.azurecr.io/predict_img:v54
         ports:
         - containerPort: 8080 # should match docker file
         env:
         - name: STORAGE_ACCT_NAME
           value: storageeacct
         - name: STORAGE_ACCT_KEY
-          value: +aROPLVyqGPkM9irWkq2LDB8NtThmTd+f75TkU/XVTkWFnPBOTCQeNjLou7N1F+kYdgDLwhOZoe5msOcntd2uA==
+          value: HGmIr4mrYOQlbRfxBjl8XnWXsb9y5VL39ZKc+MG9YflpqbyZKKI5BP/9+J/nZR4bfLMtvbRvPrAFwImbnMjPtw==
         - name: BLOB_CONTAINER_NAME
           value: blobcontainer

@@ -4,7 +4,7 @@ az group create --name $myResourceGroup --location eastus
 az acr create --resource-group $myResourceGroup --name cowzureContainerReg --sku Basic
 az acr login --name cowzureContainerReg
 az acr list --resource-group $myResourceGroup --query "[].{acrLoginServer:loginServer}" --output table
-docker push cowzurecontainerreg.azurecr.io/train_img:v5
+docker push cowzurecontainerreg.azurecr.io/train_img:v54
 rbac_assign=$(az ad sp create-for-rbac --skip-assignment)
 app_id=$(echo "$rbac_assign"|jq -r ".appId")
 pw=$(echo "$rbac_assign"|jq -r ".password")
@@ -17,7 +17,7 @@ sleep 10
 az aks create \
     --resource-group $myResourceGroup \
     --name trainCluster \
-    --location centralus  \
+    --location westus  \
     --node-count 1 \
     --service-principal $app_id \
     --client-secret $pw --generate-ssh-keys

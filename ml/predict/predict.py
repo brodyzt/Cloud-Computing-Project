@@ -7,18 +7,8 @@ import bz2
 import os
 # note: use HTTP not HTTPS
 class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
-    CLOUD_URL = 'http://trainapp/' # TODO Change
     file = bz2.BZ2File('model.pkl.bz','rb')
     model = pickle.load(file)
-    # TODO get model
-
-    try:
-        r = requests.get(CLOUD_URL+'/model')
-        print('ok')
-        model_serialized = r.content
-        model = pickle.loads(model_serialized)
-    except:
-        pass
 
     def do_GET(self):
         # expects the following format for inputs query param
@@ -45,16 +35,9 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(str(output[0]).encode('utf-8'))
 
     def do_POST(self):
-        print('posted')
-        if self.path == '/model':
-            # model_serialized = self.rfile.read(int(self.headers['Content-Length']))
-            # # this is identical to the quoed version which is good! type is in STRING
-            # quoted_model = urllib.parse.parse_qs(model_serialized)[b'model_serialized'][0].decode('utf-8')
-            # print(quoted_model)
-            # # now i need to unquote
-            # unquoted_model = urllib.parse.unquote_to_bytes(quoted_model)
-            # print(unquoted_model)
-
+        print(self.path)
+        if self.path == 'model':
+            print('model')
             import os, uuid, sys
             from azure.storage.blob import BlockBlobService, PublicAccess
             storage_account_name = os.environ['STORAGE_ACCT_NAME']

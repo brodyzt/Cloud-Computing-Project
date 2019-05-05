@@ -11,46 +11,25 @@ import time
 import http.server
 import requests
 import argparse
+from cosmos_reader import run_query
 
 class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
     
-    retrain = False
-    print('set retrain false')
+
+    
     model = None
     ##### LOAD MODEL ##########
     if os.path.exists('model.pkl.bz'):
         file = bz2.BZ2File('model.pkl.bz','rb')
         model = pickle.load(file)
         file.close()
-        retrain = True
-        print('set retrain true')
+        
+        print('starting')
 
     def do_GET(self):
         if self.path == '/':
             self.send_response(200)
             self.end_headers()
-            # self.wfile.write(model_serialized)
-        if self.path == '/model':
-            if os.path.exists('model.pkl.bz'):
-                file = bz2.BZ2File('model.pkl.bz','rb')
-                model = pickle.load(file)
-                model_serialized = pickle.dumps(model)
-                file.close()
-                self.send_response(200)
-                self.end_headers()
-                self.wfile.write(model_serialized)
-        elif self.path == '/test': # mimics what the message queue would do to the predictive service
-            model_serialized = pickle.dumps(SimpleRequestHandler.model)
-            print(model_serialized)
-            # print(model_serialized)
-            # print(model_serialized.decode('utf-8', 'backslashreplace'))
-            # requests.post(CLOUD_URL + '/model', data={'model_serialized':model_serialized.decode('utf-8', 'backslashreplace')})
-            params = {'model_serialized': urllib.parse.quote(model_serialized)}
-            
-            print(params)
-            headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-            conn = http.client.HTTPConnection("http://predictapp", 8080) # TODO change
-            conn.request("POST", "/model", urllib.parse.urlencode(params), headers)
 
     def save_to_storage():
             import os, uuid, sys
@@ -95,41 +74,22 @@ class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_POST(self):
         print (self.path)
-            
+        
         # receiving new data
         if self.path == '/data':
             ######### FETCH INPUTS ###############
-            # hardcoded vals
-            # y = # hours to calving
-            z_p = pandas.read_csv('11457_new.csv')
-            a_p = pandas.read_csv('11065_new.csv')
-            y = np.ndarray.flatten(np.concatenate((z_p[['period_to_calving']].values,a_p[['period_to_calving']].values)))
-            z_p = z_p.drop(columns=['period_to_calving'])
-            a_p = a_p.drop(columns=['period_to_calving'])
-            print(z_p)
-            print(a_p)
-            z_c = z_p.values
-            a_c = a_p.values
-
-            ############ INPUTS #####################
-
-
-            # x = [] of [] : rumination-raw-data, weekly_ruminatino_average, raw_activity,daily_activity
-            x = np.concatenate((z_c,a_c))
-
-
+            import os
+            HOST = os.environ['HOST']
+            MASTER_KEY = os.environ['MASTER_KEY']
+            DATABASE_ID = os.environ['DATABASE_ID']
+            COLLECTION_ID = os.environ['COLLECTION_ID']
+            print(HOST, MASTER_KEY, DATABASE_ID, COLLECTION_ID)
+            x, y = run_query('SELECT * FROM server s', HOST, MASTER_KEY, DATABASE_ID, COLLECTION_ID)
             
 
-            ########## TRAINING/RETRAIN ###################
-            if not SimpleRequestHandler.retrain:
-                nn = MLPRegressor(hidden_layer_sizes=(3), 
-                                  activation='tanh', solver='adam')
+            ########## TRAINING ###################
+            n = SimpleRequestHandler.model.fit(x,y)
 
-                n = nn.fit(x, y)
-                SimpleRequestHandler.retrain = True
-            else:
-                print('here')
-                n = SimpleRequestHandler.model.partial_fit(x,y)
             ####### SAVEMODEL ###########
 
             file = bz2.BZ2File('model.pkl.bz','wb')

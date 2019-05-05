@@ -3,8 +3,8 @@ kind: CronJob
 metadata:
   name: retrain
 spec:
-  # retrain every minute
-  schedule: "*/1 * * * *"
+  # retrain every 5  minute
+  schedule: "*/5 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1

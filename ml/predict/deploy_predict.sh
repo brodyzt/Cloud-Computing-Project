@@ -19,7 +19,7 @@ az aks create \
     --resource-group $myResourceGroup \
     --name predictCluster \
     --node-count 2 \
-    --location eastus \
+    --location centralus \
     --service-principal $app_id \
     --client-secret $pw --generate-ssh-keys
 az aks get-credentials --resource-group $myResourceGroup --name predictCluster

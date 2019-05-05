@@ -11,15 +11,23 @@ spec:
     spec:
       containers:
       - name: trainapp
-        image: cowzurecontainerreg.azurecr.io/train_img:v8
+        image: cowzurecontainerreg.azurecr.io/train_img:v54
         ports:
         - containerPort: 8000 # should match docker file
         env:
         - name: STORAGE_ACCT_NAME
           value: storageeacct
         - name: STORAGE_ACCT_KEY
-          value: 0nctwAhQ2PdTGABwe3ciJMPHQsRAZlILrRccCaXKe8LK0MOBMWH6qGP/8qTvEpUlidUpjLMj5wKJ0tu/Cg7MCQ==
+          value: HGmIr4mrYOQlbRfxBjl8XnWXsb9y5VL39ZKc+MG9YflpqbyZKKI5BP/9+J/nZR4bfLMtvbRvPrAFwImbnMjPtw==
         - name: BLOB_CONTAINER_NAME
           value: blobcontainer
         - name: PREDICT_SERVICE_IP
-          value: 40.121.219.50
+          value: 23.99.129.184
+        - name: HOST
+          value: https://edgeserverdatabaseaccount.documents.azure.com:443/
+        - name: MASTER_KEY
+          value: ZdYMlvNLJQHsVmInhEeNafE1vNEeRNjl5s4LaDR0Vz7JI7Bw2kHfXu0LznwY8UG36q3Ge7MqaYVQcJyBixcSvA==
+        - name: DATABASE_ID
+          value: edgeserverdatabase
+        - name: COLLECTION_ID
+          value: regularsensordatacollection
